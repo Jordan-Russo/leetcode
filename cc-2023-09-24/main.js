@@ -29,43 +29,38 @@
  * @param {TreeNode} root
  * @return {boolean}
  */
-function isBalanced(root){
-    const stack = root ? [root] : []
-    return bfs(stack, 0, undefined);
-}
 
+// dfs approach:
 
-// bfs
-// base cases
-// if a min-height was found and currHeight === minHeight + 1
-    // return false
-// if queue.length === 0 
-    // return true
-// Increment height value
-// pop all children in queue
-    // if any popped nodes don't have 2 children
-        // set minHeight to curr height if it's nullish
-    // push children to a new queue.
-// return recursive call to children queue
-
-function bfs(stack, currHeight, minHeight){
-    if(minHeight + 1 === currHeight){
-        return false
+var isBalanced = function(root) {
+    if(!root){
+        return true;
     }
-    if(stack.length === 0){return true}
-    currHeight++;
-    const children = [];
-    while(stack.length > 0){
-        const node = stack.pop();
-        if(!node?.left && !node?.right){
-            minHeight ??= currHeight
-        }
-        if(node?.left){
-            children.push(node.left)
-        }
-        if(node?.right){
-            children.push(node.push)
-        }
+    return Boolean(recursiveBalanced(root, 1));
+    // function returns false if unbalanced
+    // otherwise returns the height of the graph, which is always > 0
+};
+
+function recursiveBalanced(node, height){
+    if(!node.left && !node.right){
+        return height;
     }
-    return bfs(children, currHeight, minHeight);
+    // get height of left
+    // get height of right
+    let leftHeight = height;
+    let rightHeight = height;
+    if(node.left){
+        leftHeight = recursiveBalanced(node.left, height + 1);
+    }
+    if(node.right){
+        rightHeight = recursiveBalanced(node.right, height + 1);
+    }
+    if(!leftHeight || !rightHeight){
+        return false;
+        // bubble up unbalancing after recursive check
+    }
+    if(Math.abs(leftHeight - rightHeight) > 1){
+        return false;
+    }
+    return Math.max(leftHeight, rightHeight);
 }
